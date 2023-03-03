@@ -73,13 +73,15 @@ class JustJoinScraper:
         foundedEnd = False
 
         while not foundedEnd:
-            # Slow down to human speed :)
-            time.sleep(0.5)
-
-            # Scroll down to next offers
-            self.driver.execute_script(
-                f"document.getElementsByClassName('css-ic7v2w')[0].scroll(0, {it*550})"
-            )
+            done = False
+            while not done:
+                try:
+                    self.driver.execute_script(
+                        f"document.getElementsByClassName('css-ic7v2w')[0].scroll(0, {it*550})"
+                    )
+                    done = True
+                except:
+                    pass
             html = self.driver.page_source
 
             new_links = []
@@ -110,7 +112,7 @@ class JustJoinScraper:
         else:
             for link in self.links:
                 self.driver.get(link)
-                time.sleep(0.5)
+
                 company_name = self.driver.find_element(
                     By.CLASS_NAME, "css-l4opor"
                 ).text
@@ -149,7 +151,7 @@ class JustJoinScraper:
                 # abilities
                 abilities_text = self.driver.find_elements(By.CLASS_NAME, "css-1q98d5e")
                 abilities = str(
-                    [ability.text.split("\n") for ability in abilities_text]
+                    [ability.text.split("\n")[0] for ability in abilities_text]
                 )
                 try:
                     self.c.execute(

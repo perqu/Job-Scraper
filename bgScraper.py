@@ -100,6 +100,18 @@ class BullDogScraper:
                 salary_range2 = None
 
             abilities = str(block_data[5:-2])
+            if "Junior" in abilities:
+                abilities.remove("Junior")
+            if "Mid" in abilities:
+                abilities.remove("Mid")
+            if "Senior" in abilities:
+                abilities.remove("Senior")
+            if "B2B contract/Employment contract" in abilities:
+                abilities.remove("B2B contract/Employment contract")
+            if "B2B contract" in abilities:
+                abilities.remove("B2B contract")
+            if "Employment contract" in abilities:
+                abilities.remove("Employment contract")
 
             try:
                 self.c.execute(
