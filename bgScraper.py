@@ -30,7 +30,7 @@ class BullDogScraper:
 
         self.c.execute(
             """
-                CREATE TABLE IF NOT EXISTS just_join_it_offers
+                CREATE TABLE IF NOT EXISTS offers
                 (
                 [offer_id] INTEGER PRIMARY KEY, 
                 [offer_link] TEXT UNIQUE, 
@@ -71,7 +71,12 @@ class BullDogScraper:
             By.XPATH,
             "//div[contains(@class, 'p-8 lg:flex gap-6 relative bg-white mb-4 rounded-lg shadow cursor-pointer ')]",
         )
+        counter = 0
+        length = len(blocks)
         for block in blocks:
+            counter += 1
+            print(f"Scraping - {counter} of {length} done")
+
             link = block.find_element(By.TAG_NAME, "a").get_attribute("href")
             block_data = block.text.split("\n")
             block_data.remove("Aplikuj")
@@ -99,7 +104,7 @@ class BullDogScraper:
                 salary_range1 = None
                 salary_range2 = None
 
-            abilities = str(block_data[5:-2])
+            abilities = block_data[5:-2]
             if "Junior" in abilities:
                 abilities.remove("Junior")
             if "Mid" in abilities:
@@ -112,11 +117,17 @@ class BullDogScraper:
                 abilities.remove("B2B contract")
             if "Employment contract" in abilities:
                 abilities.remove("Employment contract")
+            if "Kontrakt B2B/Umowa o pracę" in abilities:
+                abilities.remove("Kontrakt B2B/Umowa o pracę")
+            if "Kontrakt B2B" in abilities:
+                abilities.remove("Kontrakt B2B")
+            if "Umowa o pracę" in abilities:
+                abilities.remove("Umowa o pracę")
 
             try:
                 self.c.execute(
                     f"""
-                    INSERT INTO just_join_it_offers
+                    INSERT INTO offers
                     (
                     offer_link,
                     company_name,
@@ -145,7 +156,7 @@ class BullDogScraper:
                         "Brutto",
                         "mies",  # salary_type  # salary_period
                         block_data[4],  # contract_type
-                        abilities,
+                        str(abilities),
                     ],
                 )
                 self.conn.commit()
@@ -153,16 +164,10 @@ class BullDogScraper:
                 print("To ogloszenie jest juz w bazie danych")
             except Exception as e:
                 print("wystapil blad przy dodaniu wierwsza w bazie danych: " + e)
+        print("bulldogjobs - done")
 
     # functions end
 
     # Destructor
     def __del__(self):
         self.conn.close()
-
-
-bg = BullDogScraper(
-    link="""https://bulldogjob.pl/companies/jobs/s/withSalary,true/skills,Python/city,Remote"""
-)
-
-bg.scrap_offers()

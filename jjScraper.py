@@ -32,7 +32,7 @@ class JustJoinScraper:
 
         self.c.execute(
             """
-                CREATE TABLE IF NOT EXISTS just_join_it_offers
+                CREATE TABLE IF NOT EXISTS offers
                 (
                 [offer_id] INTEGER PRIMARY KEY, 
                 [offer_link] TEXT UNIQUE, 
@@ -110,7 +110,11 @@ class JustJoinScraper:
         if len(self.links) == 0:
             print("no links to scrap, try to use find_links() before scraping")
         else:
+            counter = 0
+            length = len(self.links)
             for link in self.links:
+                counter += 1
+                print(f"Scraping - {counter} of {length} done")
                 self.driver.get(link)
 
                 company_name = self.driver.find_element(
@@ -156,7 +160,7 @@ class JustJoinScraper:
                 try:
                     self.c.execute(
                         f"""
-                        INSERT INTO just_join_it_offers
+                        INSERT INTO offers
                         (
                         offer_link,
                         company_name,
@@ -193,17 +197,10 @@ class JustJoinScraper:
                     print("To ogloszenie jest juz w bazie danych")
                 except Exception as e:
                     print("wystapil blad przy dodaniu wierwsza w bazie danych: " + e)
+        print("justjoinit - done")
 
     # functions end
 
     # Destructor
     def __del__(self):
         self.conn.close()
-
-
-jj = JustJoinScraper(
-    link="""https://justjoin.it/remote?q=python%20developer@keyword&tab=with-salary&sort=salary"""
-)
-
-jj.find_links()
-jj.scrap_offers()

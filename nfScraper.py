@@ -32,7 +32,7 @@ class NoFluffScraper:
 
         self.c.execute(
             """
-                CREATE TABLE IF NOT EXISTS just_join_it_offers
+                CREATE TABLE IF NOT EXISTS offers
                 (
                 [offer_id] INTEGER PRIMARY KEY, 
                 [offer_link] TEXT UNIQUE, 
@@ -166,7 +166,7 @@ class NoFluffScraper:
                 try:
                     self.c.execute(
                         f"""
-                            INSERT INTO just_join_it_offers
+                            INSERT INTO offers
                             (
                             offer_link,
                             company_name,
