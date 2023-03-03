@@ -72,7 +72,6 @@ class BullDogScraper:
             "//div[contains(@class, 'p-8 lg:flex gap-6 relative bg-white mb-4 rounded-lg shadow cursor-pointer ')]",
         )
         for block in blocks:
-            print("dupa")
             link = block.find_element(By.TAG_NAME, "a").get_attribute("href")
             block_data = block.text.split("\n")
             block_data.remove("Aplikuj")
