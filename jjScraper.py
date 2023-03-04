@@ -4,17 +4,17 @@ from selenium.webdriver.chrome.service import Service
 import selenium.common.exceptions
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-import re, time, sqlite3
+import re, sqlite3
 
 
 class JustJoinScraper:
 
     # Constructor
-    def __init__(self, link) -> None:
+    def __init__(self, link, filename) -> None:
         self.link = link
         self.links = []
         # create self.conn, self. c
-        self.connect_to_database("sqlite.db")
+        self.connect_to_database(filename)
         # create self.driver
         self.prepare_webdriver()
 

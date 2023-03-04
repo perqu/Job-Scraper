@@ -3,16 +3,16 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-import time, sqlite3, re
+import sqlite3, re
 
 
 class BullDogScraper:
 
     # Constructor
-    def __init__(self, link) -> None:
+    def __init__(self, link, filename) -> None:
         self.link = link
         # create self.conn, self. c
-        self.connect_to_database("sqlite.db")
+        self.connect_to_database(filename)
         # create self.driver
         self.prepare_webdriver()
 

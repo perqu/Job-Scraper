@@ -10,11 +10,11 @@ import sqlite3, time
 class NoFluffScraper:
 
     # Constructor
-    def __init__(self, link) -> None:
+    def __init__(self, link, filename) -> None:
         self.link = link
         self.links = []
         # create self.conn, self. c
-        self.connect_to_database("sqlite.db")
+        self.connect_to_database(filename)
         # create self.driver
         self.prepare_webdriver()
 
