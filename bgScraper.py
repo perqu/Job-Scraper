@@ -80,11 +80,11 @@ class BullDogScraper(Scraper):
 
             # position level
 
-            position_level = self.find_in_block(
+            position_level = self.__find_in_block(
                 ["junior", "mid", "regular", "senior", "expert"], block_data
             )
 
-            contract_type = self.find_in_block(
+            contract_type = self.__find_in_block(
                 [
                     "kontrakt b2b/umowa o pracę",
                     "umowa o pracę",
