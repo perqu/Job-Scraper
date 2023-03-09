@@ -1,69 +1,23 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-import sqlite3, re
+import re
+from scraper import Scraper
 
 
-class BullDogScraper:
+class BullDogScraper(Scraper):
 
     # Constructor
-    def __init__(self, link, filename) -> None:
+    def __init__(self, link, database_url) -> None:
+        super().__init__(database_url)
         self.link = link
-        # create self.conn, self. c
-        self.connect_to_database(filename)
-        # create self.driver
-        self.prepare_webdriver()
-
-    def connect_to_database(self, filename: str) -> None:
-        """
-        Create connection with sqlite database.
-
-            Args:
-                filename (string): a file name
-
-            Returns: None
-        """
-        self.conn = sqlite3.connect(filename)
-        self.c = self.conn.cursor()
-
-        self.c.execute(
-            """
-                CREATE TABLE IF NOT EXISTS offers
-                (
-                [offer_id] INTEGER PRIMARY KEY, 
-                [offer_link] TEXT UNIQUE, 
-                [company_name] TEXT, 
-                [company_size] TEXT,
-                [position_name] TEXT, 
-                [position_level] TEXT,
-                [salary_range1] INTEGER,
-                [salary_range2] INTEGER,
-                [salary_currency] TEXT,
-                [salary_type] TEXT,
-                [salary_period] TEXT,
-                [contract_type] TEXT,
-                [abilities] TEXT
-                )
-                """
-        )
-
-    def prepare_webdriver(self) -> None:
-        """
-        Preparing webdriver to work.
-
-            Args: None
-
-            Returns: None
-        """
-        options = Options()
-        options.add_argument("--window-size=%s" % "800,600")
-        self.driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()), options=options
-        )
 
     # functions start
+
+    def __find_in_block(self, args, block_data):
+        for key in args:
+            for block in block_data:
+                lower = str(block).lower()
+                if key in lower:
+                    return block
 
     def scrap_offers(self) -> None:
         self.driver.get(self.link)
@@ -90,7 +44,7 @@ class BullDogScraper:
                 salary_reversed = salary[::-1]
                 salary_currency = (salary_reversed[: salary_reversed.find(" ")])[::-1]
                 salary_range1 = 0
-                salary_range2 = int(re.findall(r"\d+", salary)[0])
+                salary_range2 = int(re.findall(r"\d+", salary.replace(" ", ""))[0])
 
             elif "-" in salary:
                 salary_reversed = salary[::-1]
@@ -101,8 +55,8 @@ class BullDogScraper:
                 salary_range2 = int(salary[comma + 1 :])
             else:
                 salary_currency = None
-                salary_range1 = None
-                salary_range2 = None
+                salary_range1 = -1
+                salary_range2 = -1
 
             abilities = block_data[5:-2]
             if "Junior" in abilities:
@@ -124,50 +78,39 @@ class BullDogScraper:
             if "Umowa o pracę" in abilities:
                 abilities.remove("Umowa o pracę")
 
-            try:
-                self.c.execute(
-                    f"""
-                    INSERT INTO offers
-                    (
-                    offer_link,
-                    company_name,
-                    company_size,
-                    position_name,
-                    position_level,
+            # position level
+
+            position_level = self.find_in_block(
+                ["junior", "mid", "regular", "senior", "expert"], block_data
+            )
+
+            contract_type = self.find_in_block(
+                [
+                    "kontrakt b2b/umowa o pracę",
+                    "umowa o pracę",
+                    "kontrakt b2b",
+                    "employment contract",
+                    "b2b contract",
+                    "b2b contract/employment contract",
+                ],
+                block_data,
+            )
+            super().insert_to_offers(
+                [
+                    link,
+                    block_data[0],  # company_name
+                    None,  # company size
+                    block_data[1],  # position_name
+                    position_level,  # position_level
                     salary_range1,
                     salary_range2,
                     salary_currency,
-                    salary_type,
-                    salary_period,
-                    contract_type,
-                    abilities
-                    )
-                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?);
-                    """,
-                    [
-                        link,
-                        block_data[0],  # company_name
-                        None,  # company size
-                        block_data[1],  # position_name
-                        block_data[3],  # position_level
-                        salary_range1,
-                        salary_range2,
-                        salary_currency,
-                        "Brutto",
-                        "mies",  # salary_type  # salary_period
-                        block_data[4],  # contract_type
-                        str(abilities),
-                    ],
-                )
-                self.conn.commit()
-            except sqlite3.IntegrityError:
-                print("To ogloszenie jest juz w bazie danych")
-            except Exception as e:
-                print("wystapil blad przy dodaniu wierwsza w bazie danych: " + e)
+                    "Brutto",
+                    "mies",  # salary_type  # salary_period
+                    contract_type,  # contract_type
+                    str(abilities),
+                ]
+            )
         print("bulldogjobs - done")
 
     # functions end
-
-    # Destructor
-    def __del__(self):
-        self.conn.close()

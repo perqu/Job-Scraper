@@ -1,73 +1,20 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 import selenium.common.exceptions
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-import re, sqlite3
+import re
+from scraper import Scraper
 
 
-class JustJoinScraper:
+class JustJoinScraper(Scraper):
 
     # Constructor
-    def __init__(self, link, filename) -> None:
+    def __init__(self, link, database_url) -> None:
+        super().__init__(database_url)
         self.link = link
         self.links = []
-        # create self.conn, self. c
-        self.connect_to_database(filename)
-        # create self.driver
-        self.prepare_webdriver()
-
-    def connect_to_database(self, filename: str) -> None:
-        """
-        Create connection with sqlite database.
-
-            Args:
-                filename (string): a file name
-
-            Returns: None
-        """
-        self.conn = sqlite3.connect(filename)
-        self.c = self.conn.cursor()
-
-        self.c.execute(
-            """
-                CREATE TABLE IF NOT EXISTS offers
-                (
-                [offer_id] INTEGER PRIMARY KEY, 
-                [offer_link] TEXT UNIQUE, 
-                [company_name] TEXT, 
-                [company_size] TEXT,
-                [position_name] TEXT, 
-                [position_level] TEXT,
-                [salary_range1] INTEGER,
-                [salary_range2] INTEGER,
-                [salary_currency] TEXT,
-                [salary_type] TEXT,
-                [salary_period] TEXT,
-                [contract_type] TEXT,
-                [abilities] TEXT
-                )
-                """
-        )
-
-    def prepare_webdriver(self) -> None:
-        """
-        Preparing webdriver to work.
-
-            Args: None
-
-            Returns: None
-        """
-        options = Options()
-        options.add_argument("--window-size=%s" % "800,600")
-        self.driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()), options=options
-        )
 
     # functions start
 
-    def find_links(self) -> None:
+    def __find_links(self) -> None:
         self.driver.get(self.link)
         it = 0
         foundedEnd = False
@@ -107,8 +54,9 @@ class JustJoinScraper:
         self.links = list(set(self.links))
 
     def scrap_offers(self) -> None:
+        self.__find_links()
         if len(self.links) == 0:
-            print("no links to scrap, try to use find_links() before scraping")
+            print("no links to scrap")
         else:
             counter = 0
             length = len(self.links)
@@ -157,12 +105,10 @@ class JustJoinScraper:
                 abilities = str(
                     [ability.text.split("\n")[0] for ability in abilities_text]
                 )
-                try:
-                    self.c.execute(
-                        f"""
-                        INSERT INTO offers
-                        (
-                        offer_link,
+
+                super().insert_to_offers(
+                    [
+                        link,
                         company_name,
                         company_size,
                         position_name,
@@ -173,34 +119,9 @@ class JustJoinScraper:
                         salary_type,
                         salary_period,
                         contract_type,
-                        abilities
-                        )
-                        VALUES(?,?,?,?,?,?,?,?,?,?,?,?);
-                        """,
-                        [
-                            link,
-                            company_name,
-                            company_size,
-                            position_name,
-                            position_level,
-                            salary_range1,
-                            salary_range2,
-                            salary_currency,
-                            salary_type,
-                            salary_period,
-                            contract_type,
-                            abilities,
-                        ],
-                    )
-                    self.conn.commit()
-                except sqlite3.IntegrityError:
-                    print("To ogloszenie jest juz w bazie danych")
-                except Exception as e:
-                    print("wystapil blad przy dodaniu wierwsza w bazie danych: " + e)
+                        abilities,
+                    ]
+                )
         print("justjoinit - done")
 
     # functions end
-
-    # Destructor
-    def __del__(self):
-        self.conn.close()
