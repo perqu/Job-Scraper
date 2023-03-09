@@ -7,12 +7,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 class Scraper:
     def __init__(self, database_url) -> None:
-        self.conn = self.set_connection(database_url)
-        self.cursor = self.set_cursor()
-        self.create_table_offers()
-        self.driver = self.prepare_webdriver()
+        self.conn = self.__set_connection(database_url)
+        self.cursor = self.__set_cursor()
+        self.__create_table_offers()
+        self.driver = self.__prepare_webdriver()
 
-    def prepare_webdriver(self):
+    def __prepare_webdriver(self):
         """
         Preparing webdriver to work.
 
@@ -26,13 +26,13 @@ class Scraper:
             service=Service(ChromeDriverManager().install()), options=options
         )
 
-    def set_connection(self, database_url):
+    def __set_connection(self, database_url):
         return psycopg2.connect(database_url)
 
-    def set_cursor(self):
+    def __set_cursor(self):
         return self.conn.cursor()
 
-    def create_table_offers(self) -> None:
+    def __create_table_offers(self) -> None:
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS offers

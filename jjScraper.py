@@ -53,6 +53,57 @@ class JustJoinScraper(Scraper):
 
         self.links = list(set(self.links))
 
+    def __scrap_offer(self, link):
+        self.driver.get(link)
+
+        company_name = self.driver.find_element(By.CLASS_NAME, "css-l4opor").text
+        # there are three elements of class: css-1ji7bvd. Only first two are in our interest.
+        company_size, position_level, _ = [
+            element.text
+            for element in self.driver.find_elements(By.CLASS_NAME, "css-1ji7bvd")
+        ]
+        position_name = self.driver.find_element(By.CLASS_NAME, "css-1id4k1").text
+
+        # salary
+        salary = (self.driver.find_element(By.CLASS_NAME, "css-a2pcn2").text).replace(
+            " ", ""
+        )
+        match = re.findall("\d+", "0 0 " + salary)
+        match_currency = re.findall("[A-Z]{3}", salary)
+        salary_currency = match_currency[0] if len(match_currency) > 0 else None
+        salary_range1, salary_range2 = int(match[-2]), int(match[-1])
+
+        # Type and period of salary
+        text = (self.driver.find_element(By.CLASS_NAME, "css-rmoont").text).strip()
+        slash = text.find("/")
+        salary_type = text[:slash]
+        salary_period = "mies" if text[slash + 1 :] == "month" else text[slash + 1 :]
+
+        # Contract Type
+        text = self.driver.find_element(By.CLASS_NAME, "css-qy8eaj").text
+        contract_type = text.replace(" ", "").replace("-", "")
+
+        # abilities
+        abilities_text = self.driver.find_elements(By.CLASS_NAME, "css-1q98d5e")
+        abilities = str([ability.text.split("\n")[0] for ability in abilities_text])
+
+        self.insert_to_offers(
+            [
+                link,
+                company_name,
+                company_size,
+                position_name,
+                position_level,
+                salary_range1,
+                salary_range2,
+                salary_currency,
+                salary_type,
+                salary_period,
+                contract_type,
+                abilities,
+            ]
+        )
+
     def scrap_offers(self) -> None:
         self.__find_links()
         if len(self.links) == 0:
@@ -62,66 +113,18 @@ class JustJoinScraper(Scraper):
             length = len(self.links)
             for link in self.links:
                 counter += 1
-                print(f"Scraping - {counter} of {length} done")
-                self.driver.get(link)
+                print(f"Scraping - {counter} of {length} - justjoinit")
 
-                company_name = self.driver.find_element(
-                    By.CLASS_NAME, "css-l4opor"
-                ).text
-                # there are three elements of class: css-1ji7bvd. Only first two are in our interest.
-                company_size, position_level, _ = [
-                    element.text
-                    for element in self.driver.find_elements(
-                        By.CLASS_NAME, "css-1ji7bvd"
-                    )
-                ]
-                position_name = self.driver.find_element(
-                    By.CLASS_NAME, "css-1id4k1"
-                ).text
+                done = False
+                tries = 1
+                while not done and tries <= 3:
+                    try:
+                        self.__scrap_offer(link)
+                        done = True
+                    except:
+                        print(f"Blad, ponawiam probe")
+                        tries += 1
 
-                # salary
-                salary = (
-                    self.driver.find_element(By.CLASS_NAME, "css-a2pcn2").text
-                ).strip()
-                salary_reversed = salary[::-1]
-                salary_currency = (salary_reversed[: salary_reversed.find(" ")])[::-1]
-                salary = (salary[: -len(salary_currency) - 1]).replace(" ", "")
-                comma = salary.find("-")
-                salary_range1 = int(salary[:comma])
-                salary_range2 = int(salary[comma + 1 :])
-
-                text = (
-                    self.driver.find_element(By.CLASS_NAME, "css-rmoont").text
-                ).strip()
-                slash = text.find("/")
-                salary_type = text[:slash]
-                salary_period = text[slash + 1 :]
-
-                text = self.driver.find_element(By.CLASS_NAME, "css-qy8eaj").text
-                contract_type = text.replace(" ", "").replace("-", "")
-
-                # abilities
-                abilities_text = self.driver.find_elements(By.CLASS_NAME, "css-1q98d5e")
-                abilities = str(
-                    [ability.text.split("\n")[0] for ability in abilities_text]
-                )
-
-                super().insert_to_offers(
-                    [
-                        link,
-                        company_name,
-                        company_size,
-                        position_name,
-                        position_level,
-                        salary_range1,
-                        salary_range2,
-                        salary_currency,
-                        salary_type,
-                        salary_period,
-                        contract_type,
-                        abilities,
-                    ]
-                )
         print("justjoinit - done")
 
     # functions end

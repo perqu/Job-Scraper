@@ -1,5 +1,6 @@
 import pandas as pd
 import sqlite3
+import matplotlib.pyplot as plt
 
 # Read sqlite query results into a pandas DataFrame
 con = sqlite3.connect("sqlite.db")
@@ -30,5 +31,17 @@ for el in ["3.x", "in", "3", "i", "/", "or"]:
 
 sort_dictionary = dict(sorted(wyniki.items(), key=lambda item: item[1], reverse=True))
 
+keys_to_delete = []
+
 for key, value in sort_dictionary.items():
-    print(f"{key} - {value}")
+    if value < 10:
+        keys_to_delete.append(key)
+
+for key in keys_to_delete:
+    del sort_dictionary[key]
+
+names = list(sort_dictionary.keys())
+values = list(sort_dictionary.values())
+
+plt.bar(range(len(sort_dictionary)), values, tick_label=names)
+plt.show()
