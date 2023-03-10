@@ -1,6 +1,6 @@
 Job Scraper
 =======
-# Analizator potrzeb rynku
+# Analizator wymaganych umiejętności w branży IT
 
 ## Autor - Paweł Perenc
 
