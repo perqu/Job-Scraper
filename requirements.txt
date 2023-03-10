@@ -1,0 +1,7 @@
+matplotlib==3.7.1
+pandas==1.5.2
+psycopg2==2.9.5
+psycopg2_binary==2.9.5
+python-dotenv==1.0.0
+selenium==4.8.2
+webdriver_manager==3.8.5
