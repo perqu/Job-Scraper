@@ -42,7 +42,7 @@ Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardz
 
 1. Skopiowanie repozytorium
   ```sh
-  git clone https://github.com/perqu/Rijndael-Cipher.git
+  git clone https://github.com/perqu/Job-Scraper.git
   ``` 
 2. Instalacja wymaganych bibliotek
   ```sh
