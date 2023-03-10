@@ -59,7 +59,7 @@ Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardz
 
 ## Przykład
 
-![alt text](imgs\wykres.png)
+![alt text](https://github.com/perqu/Job-Scraper/blob/main/imgs/wykres.png)
 
 ## Licencja
 
