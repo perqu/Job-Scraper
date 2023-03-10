@@ -49,7 +49,7 @@ Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardz
   
   
 ## Użycie
-  1. W pliku main należy uzupełnić interesujace nas linki ze stron: bulldogjob, nofluffjobs i justjoinit. Przygotowac na kazdej ze stron interesujace nas wyszukiwanie, np w slowach kluczowych wpisac 'python developer', czy interesuja nas ogloszenia z podanymi zarobkami itp.Nastepnie tak przygotowane linki wkleic w pliku main.
+  1. W pliku main należy uzupełnić interesujace nas linki ze stron: bulldogjob, nofluffjobs i justjoinit. Przygotowac na kazdej ze stron interesujace nas wyszukiwanie, np w slowach kluczowych wpisac 'python developer', czy interesuja nas ogloszenia z podanymi zarobkami itp. Nastepnie tak przygotowane linki wkleic w pliku main.
 
   2. W pliku .env.example nalezy usunac rozszerzenie example i uzupełnic URL do bazy danych postresql.
 
