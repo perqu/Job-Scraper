@@ -28,7 +28,7 @@ Job Scraper
 <!-- ABOUT THE PROJECT -->
 ## Opis Projektu
 
-Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardziej porzadane umiejętności dla konkretnego zawodu.
+Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardziej pożadane umiejętności dla konkretnego zawodu.
 
 ### Użyte technologie
 
