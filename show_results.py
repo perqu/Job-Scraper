@@ -1,10 +1,16 @@
 import pandas as pd
-import sqlite3
+import psycopg2
 import matplotlib.pyplot as plt
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+database_url = os.environ["DATABASE_URL"]
 
 # Read sqlite query results into a pandas DataFrame
-con = sqlite3.connect("sqlite.db")
-df = pd.read_sql_query("SELECT * from offers", con)
+connection = psycopg2.connect(database_url)
+df = pd.read_sql_query("SELECT * from offers", connection)
 
 # Verify that result of SQL query is stored in the dataframe
 lista = []
