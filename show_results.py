@@ -1,18 +1,31 @@
 import pandas as pd
-import psycopg2
 import matplotlib.pyplot as plt
+
+"""
+# Version with postgresql
+import psycopg2
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 database_url = os.environ["DATABASE_URL"]
-
-# Read sqlite query results into a pandas DataFrame
 connection = psycopg2.connect(database_url)
+# END Version with postgresql
+"""
+
+# Version with sqlite
+import sqlite3
+
+database_url = "sqlite.db"
+connection = sqlite3.connect(database_url)
+# END Version with sqlite
+
+# from what number of occurrences should be drawn on the graph
+number = 10
+
+
 df = pd.read_sql_query("SELECT * from offers", connection)
 
-# Verify that result of SQL query is stored in the dataframe
 lista = []
 for el in df["abilities"]:
     el = el[1:-1]
@@ -40,7 +53,7 @@ sort_dictionary = dict(sorted(wyniki.items(), key=lambda item: item[1], reverse=
 keys_to_delete = []
 
 for key, value in sort_dictionary.items():
-    if value < 10:
+    if value < number:
         keys_to_delete.append(key)
 
 for key in keys_to_delete:

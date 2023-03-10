@@ -1,6 +1,6 @@
 Job Scraper
 =======
-# Analizator potrzeb rynku
+# Analizator wymaganych umiejętności w branży IT
 
 ## Autor - Paweł Perenc
 
@@ -19,6 +19,7 @@ Job Scraper
       <a href="#instalacja">Instalacja</a>
     </li>
     <li><a href="#użycie">Użycie</a></li>
+    <li><a href="#użycie-z-postgresql">Użycie z postgresql</a></li>
     <li><a href="#przykład">Przykład</a></li>
     <li><a href="#licencja">Licencja</a></li>
     <li><a href="#kontakt">Kontakt</a></li>
@@ -28,7 +29,7 @@ Job Scraper
 <!-- ABOUT THE PROJECT -->
 ## Opis Projektu
 
-Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardziej porzadane umiejętności dla konkretnego zawodu.
+Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardziej pożadane umiejętności dla konkretnego zawodu.
 
 ### Użyte technologie
 
@@ -49,17 +50,32 @@ Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardz
   
   
 ## Użycie
-  1. W pliku main należy uzupełnić interesujace nas linki ze stron: bulldogjob, nofluffjobs i justjoinit. Przygotowac na kazdej ze stron interesujace nas wyszukiwanie, np w slowach kluczowych wpisac 'python developer', czy interesuja nas ogloszenia z podanymi zarobkami itp.Nastepnie tak przygotowane linki wkleic w pliku main.
+  1. W pliku main należy uzupełnić interesujace nas linki ze stron: bulldogjob, nofluffjobs i justjoinit. Przygotowac na kazdej ze stron interesujace nas wyszukiwanie, np w slowach kluczowych wpisac 'python developer', czy interesuja nas ogloszenia z podanymi zarobkami itp. Nastepnie tak przygotowane linki wkleic w pliku main.
 
-  2. W pliku .env.example nalezy usunac rozszerzenie example i uzupełnic URL do bazy danych postresql.
+  2. Uruchomic program w pliku main, po skonczeniu dzialania wszystkie ogloszenia zostana spisane do bazy danych.
 
-  3. Uruchomic program w pliku main, po skonczeniu dzialania wszystkie ogloszenia zostana spisane do bazy danych.
+  3. Przykladowa analiza danych znajduje sie w pliku show_results.py
 
-  4. Przykladowa analiza danych znajduje sie w pliku show_results.py
+## Użycie z postgresql
+  Wykonac te same czynności z poprzedniego punktu, natomiast najpierw należy podmienic kod i przygotowac plik .env z URL do bazy postgresql.
+
+  1. W pliku .env.example nalezy usunac rozszerzenie example i uzupełnic URL do bazy danych postresql.
+
+  2. Podmienić kod w trzech plikach: main.py, show_results.py i scraper.py o oznaczeniu: 
+          ```
+          # Version with sqlite
+          # END Version with sqlite
+          ``` 
+
+        na kod dla bazy danych postgres o oznaczeniu:
+          ```
+          # Version with postgresql
+          # END Version with postgresql
+          ```
 
 ## Przykład
 
-![alt text](imgs\wykres.png)
+![alt text](https://github.com/perqu/Job-Scraper/blob/main/imgs/wykres.png)
 
 ## Licencja
 
