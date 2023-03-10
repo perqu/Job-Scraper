@@ -36,6 +36,7 @@ Projekt zostal stworzony, żeby w krótkim czasie z branży IT wydobyć najbardz
 * [Python](https://www.python.org/)
 * [Selenium](https://selenium-python.readthedocs.io/)
 * [Postgresql](https://www.postgresql.org/)
+* [sqlite](https://www.sqlite.org/index.html)
 
 ## Instalacja
 
